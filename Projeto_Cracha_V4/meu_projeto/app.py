@@ -11,11 +11,11 @@ CONFIG_SHELL = {
     "fonte": os.path.join(os.path.dirname(__file__), "arialbd.ttf"),
     "cor_texto": "black",
     "tamanhos_fonte": {
-        "nome": 40,
-        "dados": 35  # Para RG e CPF
+        "nome": 25,
+        "dados": 15  # Para RG e CPF
     },
     "coordenadas": {
-        "nome": (50, 175),
+        "nome": (178, 160),
         "rg": (50, 225),
         "cpf": (50, 275),
         "foto": (220, 340)
