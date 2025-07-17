@@ -35,14 +35,14 @@ CONFIG_CAIXA = {
     "cor_texto": (255, 255, 255),  # Branco
     
     "tamanhos_fonte": {
-        "nome": 40,  # Aumentei o tamanho para melhor visualização
-        "dados": 35
+        "nome": 25,  # Aumentei o tamanho para melhor visualização
+        "dados": 15
     },
     
     # --- COORDENADAS CORRIGIDAS ---
     # O texto agora ficará abaixo da foto.
     "coordenadas": {
-        "nome": (180, 415),  # Desci o texto para abaixo da foto
+        "nome": (178, 160 ),  # Desci o texto para abaixo da foto
         "rg":   (180, 465),  # Aumentei o espaçamento entre as linhas
         "cpf":  (180, 515),
         "foto": (213, 222)  # Posição da foto está OK
