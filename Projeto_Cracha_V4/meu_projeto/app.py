@@ -24,34 +24,31 @@ CONFIG_SHELL = {
 }
 
 # ==============================================================================
-# BLOCO DE CONFIGURAÇÃO DO CRACHÁ DA CAIXA (COM VALORES DA IMAGEM)
-# Copie e cole este bloco no seu código.
+# BLOCO DE CONFIGURAÇÃO DO CRACHÁ DA CAIXA (COM NOVAS COORDENADAS)
 # ==============================================================================
 CONFIG_CAIXA = {
-    # ATENÇÃO: Renomeie o arquivo de template se o seu tiver um nome diferente
+    # Mantenha o nome do seu arquivo de template
     "arquivo_template": os.path.join(os.path.dirname(__file__), "static", "Crachá empresarial com foto e informações simples azul verde e branco.png"),
     
-    # Você pode precisar de uma fonte que se pareça com a da imagem
-    "fonte": os.path.join(os.path.dirname(__file__), "arial.ttf"), 
+    "fonte": os.path.join(os.path.dirname(__file__), "arialbd.ttf"), # Usando Arial Negrito como um bom padrão
     
-    # A cor do texto na imagem é branca
-    "cor_texto": (255, 255, 255),
+    "cor_texto": (255, 255, 255),  # Branco
     
     "tamanhos_fonte": {
-        "nome": 26, # Ajuste o tamanho da fonte para caber bem
-        "dados": 24
+        "nome": 40,  # Aumentei o tamanho para melhor visualização
+        "dados": 35
     },
     
-    # Coordenadas extraídas da imagem
+    # --- COORDENADAS CORRIGIDAS ---
+    # O texto agora ficará abaixo da foto.
     "coordenadas": {
-        "nome": (268, 432),
-        "rg": (268, 467),
-        "cpf": (268, 499),
-        "foto": (213, 222)
+        "nome": (180, 415),  # Desci o texto para abaixo da foto
+        "rg":   (180, 465),  # Aumentei o espaçamento entre as linhas
+        "cpf":  (180, 515),
+        "foto": (213, 222)  # Posição da foto está OK
     },
 
-    # Tamanho do quadrado cinza da foto na imagem
-    "tamanho_foto": (174, 174)
+    "tamanho_foto": (174, 174) # Tamanho da foto está OK
 }
 
 # --- FUNÇÕES (MODIFICADAS PARA USAR AS CONFIGURAÇÕES) ---
