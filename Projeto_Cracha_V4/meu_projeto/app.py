@@ -37,7 +37,7 @@ CONFIG_CAIXA = {
         "dados": 35
     },
     "coordenadas": {
-        "nome": (180, 415),  # Coordenada corrigida
+        "nome": (233,515,398,464),  # Coordenada corrigida
         "rg":   (180, 465),  # Coordenada corrigida
         "cpf":  (180, 515),  # Coordenada corrigida
         "foto": (213, 222)
