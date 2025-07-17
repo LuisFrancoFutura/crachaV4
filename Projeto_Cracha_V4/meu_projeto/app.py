@@ -1,134 +1,138 @@
-# -*- coding: utf-8 -*-
-import tkinter as tk
-from tkinter import filedialog
+import os
 from PIL import Image, ImageDraw, ImageFont
+import streamlit as st
 
 # ==============================================================================
-# CONFIGURAÇÕES DO CRACHÁ DA SHELL (NÃO MEXER AQUI)
-# Estas são as configurações que você disse que já estão funcionando.
+# BLOCO DE CONFIGURAÇÃO DO CRACHÁ DA SHELL
+# (Valores de exemplo baseados no seu código original)
 # ==============================================================================
 CONFIG_SHELL = {
-    "arquivo_template": "templates/template_shell.png",
-    "cor_texto": (0, 0, 0),  # Preto
-    "fonte": "fonts/Verdana.ttf",
-    "tamanho_fonte": 28,
+    "arquivo_template": os.path.join(os.path.dirname(__file__), "static", "template_shell.jpg"),
+    "fonte": os.path.join(os.path.dirname(__file__), "arialbd.ttf"),
+    "cor_texto": "black",
+    "tamanhos_fonte": {
+        "nome": 40,
+        "dados": 35  # Para RG e CPF
+    },
     "coordenadas": {
-        "foto": (50, 50),
-        "nome": (250, 150),
-        "cargo": (250, 200)
-    }
+        "nome": (50, 175),
+        "rg": (50, 225),
+        "cpf": (50, 275),
+        "foto": (220, 340)
+    },
+    "tamanho_foto": (225, 240)
 }
 
 # ==============================================================================
-# CONFIGURAÇÕES DO CRACHÁ DA CAIXA (EDITAR AQUI)
+# BLOCO DE CONFIGURAÇÃO DO CRACHÁ DA CAIXA (EDITAR AQUI)
 # Altere os valores abaixo de acordo com o seu novo template da Caixa.
 # ==============================================================================
 CONFIG_CAIXA = {
-    "arquivo_template": "templates/template_caixa.png",
+    "arquivo_template": os.path.join(os.path.dirname(__file__), "static", "template_caixa.jpg"),
+    "fonte": os.path.join(os.path.dirname(__file__), "futura.ttf"), # Exemplo: outra fonte
     "cor_texto": (0, 92, 169),  # Exemplo: Azul Caixa
-    "fonte": "fonts/Futura.ttf",
-    "tamanho_fonte": 32,
+    "tamanhos_fonte": {
+        "nome": 45,
+        "dados": 38
+    },
     "coordenadas": {
         # !!! Use um editor de imagem (Paint) para achar os valores (X, Y) corretos !!!
-        "foto": (65, 200),
         "nome": (65, 480),
-        "cargo": (65, 530)
-    }
+        "rg": (65, 530),
+        "cpf": (65, 580),
+        "foto": (250, 150)
+    },
+    "tamanho_foto": (200, 250)
 }
 
+# --- FUNÇÕES (MODIFICADAS PARA USAR AS CONFIGURAÇÕES) ---
 
-# --- Janela Principal ---
-root = tk.Tk()
-root.title("Gerador de Crachás")
-root.geometry("400x350")
-
-# --- Variáveis Globais ---
-caminho_foto = ""
-template_selecionado = tk.StringVar(value="shell")
-
-# --- Funções ---
-def selecionar_foto():
-    global caminho_foto
-    caminho_foto = filedialog.askopenfilename(
-        title="Selecione uma foto",
-        filetypes=(("Arquivos de imagem", "*.jpg;*.jpeg;*.png"),)
-    )
-    if caminho_foto:
-        label_foto_status.config(text="Foto selecionada!", fg="green")
-
-def gerar_cracha():
-    nome = entry_nome.get()
-    cargo = entry_cargo.get()
-    escolha = template_selecionado.get()
-
-    if not all([nome, cargo, caminho_foto]):
-        label_gerador_status.config(text="Preencha todos os campos e selecione uma foto!", fg="red")
-        return
-
+def carregar_fonte(caminho_fonte, tamanho):
     try:
-        # --- LÓGICA DE GERAÇÃO MODIFICADA ---
-        # Agora, usamos um if/else para carregar a configuração correta
-        # de forma totalmente separada.
-        if escolha == "shell":
+        # Verifica se o caminho da fonte existe, senão usa uma alternativa
+        if not os.path.exists(caminho_fonte):
+            caminho_fonte = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
+        return ImageFont.truetype(caminho_fonte, tamanho)
+    except Exception as e:
+        st.error(f"Erro ao carregar a fonte: {e}")
+        raise
+
+# --- Função principal de geração, agora mais flexível ---
+def gerar_cracha(nome, rg, cpf, template_escolhido, foto_path=None):
+    try:
+        # 1. Carrega a configuração correta baseada na escolha do usuário
+        if template_escolhido == "Shell":
             config = CONFIG_SHELL
-        else: # if escolha == "caixa":
+        else: # "Caixa"
             config = CONFIG_CAIXA
 
-        # O resto do código é genérico e funciona com a 'config' carregada
-        cracha = Image.open(config["arquivo_template"])
-        draw = ImageDraw.Draw(cracha)
+        # 2. Abre o arquivo de template correto
+        if not os.path.exists(config["arquivo_template"]):
+            raise FileNotFoundError(f"Template não encontrado: {config['arquivo_template']}")
         
-        fonte = ImageFont.truetype(config["fonte"], size=config["tamanho_fonte"])
-        cor = config["cor_texto"]
-        
-        coord_nome = config["coordenadas"]["nome"]
-        coord_cargo = config["coordenadas"]["cargo"]
-        coord_foto = config["coordenadas"]["foto"]
+        template = Image.open(config["arquivo_template"])
+        draw = ImageDraw.Draw(template)
 
-        draw.text(coord_nome, nome, fill=cor, font=fonte)
-        draw.text(coord_cargo, cargo, fill=cor, font=fonte)
+        # 3. Carrega as fontes com os tamanhos corretos
+        fonte_nome = carregar_fonte(config["fonte"], config["tamanhos_fonte"]["nome"])
+        fonte_dados = carregar_fonte(config["fonte"], config["tamanhos_fonte"]["dados"])
 
-        foto = Image.open(caminho_foto)
-        foto = foto.resize((150, 200))
-        cracha.paste(foto, coord_foto)
+        # 4. Usa as coordenadas e cores corretas
+        draw.text(config["coordenadas"]["nome"], f"Nome: {nome}", fill=config["cor_texto"], font=fonte_nome)
+        draw.text(config["coordenadas"]["rg"], f"RG: {rg}", fill=config["cor_texto"], font=fonte_dados)
+        draw.text(config["coordenadas"]["cpf"], f"CPF: {cpf}", fill=config["cor_texto"], font=fonte_dados)
 
-        nome_arquivo = f"output/cracha_{nome.replace(' ', '_')}_{escolha}.png"
-        cracha.save(nome_arquivo)
-        
-        label_gerador_status.config(text=f"Crachá salvo!", fg="blue")
+        # 5. Adiciona a foto, se fornecida
+        if foto_path:
+            try:
+                foto = Image.open(foto_path).resize(config["tamanho_foto"])
+                template.paste(foto, config["coordenadas"]["foto"])
+            except Exception as e:
+                st.error(f"Erro ao processar a foto: {e}")
+
+        # 6. Salva o crachá gerado
+        output_path = f"cracha_gerado_{template_escolhido.lower()}.png"
+        template.save(output_path)
+        return output_path
 
     except Exception as e:
-        label_gerador_status.config(text=f"Ocorreu um erro: {e}", fg="red")
+        st.error(f"Erro ao gerar o crachá: {e}")
+        return None
 
+# --- INTERFACE STREAMLIT ---
 
-# --- Interface Gráfica (sem alterações) ---
-frame_escolha = tk.Frame(root)
-frame_escolha.pack(pady=(10,0))
-label_escolha = tk.Label(frame_escolha, text="Escolha o Template:")
-label_escolha.pack(side=tk.LEFT, padx=5)
-radio_shell = tk.Radiobutton(frame_escolha, text="Shell", variable=template_selecionado, value="shell")
-radio_shell.pack(side=tk.LEFT)
-radio_caixa = tk.Radiobutton(frame_escolha, text="Caixa", variable=template_selecionado, value="caixa")
-radio_caixa.pack(side=tk.LEFT)
+st.title("Gerador de Crachás")
 
-label_nome = tk.Label(root, text="Nome:")
-label_nome.pack(pady=(10, 0))
-entry_nome = tk.Entry(root, width=40)
-entry_nome.pack()
+# +++ ADICIONADO: SELEÇÃO DE TEMPLATE +++
+escolha_template = st.selectbox(
+    "Escolha o Template:",
+    ("Shell", "Caixa")
+)
 
-label_cargo = tk.Label(root, text="Cargo:")
-label_cargo.pack(pady=(10, 0))
-entry_cargo = tk.Entry(root, width=40)
-entry_cargo.pack()
+# Entrada de dados do usuário (sem alteração)
+nome = st.text_input("Nome:")
+rg = st.text_input("RG:")
+cpf = st.text_input("CPF:")
+foto = st.file_uploader("Envie uma foto (opcional):", type=["jpg", "jpeg", "png"])
 
-btn_foto = tk.Button(root, text="Selecionar Foto", command=selecionar_foto)
-btn_foto.pack(pady=10)
-label_foto_status = tk.Label(root, text="")
-label_foto_status.pack()
+# Criar a pasta 'static' se não existir
+if not os.path.exists("static"):
+    os.makedirs("static")
 
-btn_gerar = tk.Button(root, text="Gerar Crachá", command=gerar_cracha)
-btn_gerar.pack(pady=10)
-label_gerador_status = tk.Label(root, text="")
-label_gerador_status.pack()
-
-root.mainloop()
+# Botão para gerar o crachá
+if st.button("Gerar Crachá"):
+    if nome and rg and cpf:
+        foto_path = None
+        if foto:
+            foto_path = os.path.join("static", "foto_temp.jpg")
+            with open(foto_path, "wb") as f:
+                f.write(foto.getbuffer())
+        
+        # --- MODIFICADO: Passa a escolha do usuário para a função ---
+        output_path = gerar_cracha(nome, rg, cpf, escolha_template, foto_path)
+        
+        if output_path:
+            st.success("Crachá gerado com sucesso!")
+            st.image(output_path)
+    else:
+        st.error("Por favor, preencha todos os campos obrigatórios.")
