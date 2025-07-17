@@ -24,25 +24,34 @@ CONFIG_SHELL = {
 }
 
 # ==============================================================================
-# BLOCO DE CONFIGURAÇÃO DO CRACHÁ DA CAIXA (EDITAR AQUI)
-# Altere os valores abaixo de acordo com o seu novo template da Caixa.
+# BLOCO DE CONFIGURAÇÃO DO CRACHÁ DA CAIXA (COM VALORES DA IMAGEM)
+# Copie e cole este bloco no seu código.
 # ==============================================================================
 CONFIG_CAIXA = {
-    "arquivo_template": os.path.join(os.path.dirname(__file__), "static", "template_caixa.jpg"),
-    "fonte": os.path.join(os.path.dirname(__file__), "futura.ttf"), # Exemplo: outra fonte
-    "cor_texto": (0, 92, 169),  # Exemplo: Azul Caixa
+    # ATENÇÃO: Renomeie o arquivo de template se o seu tiver um nome diferente
+    "arquivo_template": os.path.join(os.path.dirname(__file__), "static", "Crachá empresarial com foto e informações simples azul verde e branco.png"),
+    
+    # Você pode precisar de uma fonte que se pareça com a da imagem
+    "fonte": os.path.join(os.path.dirname(__file__), "arial.ttf"), 
+    
+    # A cor do texto na imagem é branca
+    "cor_texto": (255, 255, 255),
+    
     "tamanhos_fonte": {
-        "nome": 45,
-        "dados": 38
+        "nome": 26, # Ajuste o tamanho da fonte para caber bem
+        "dados": 24
     },
+    
+    # Coordenadas extraídas da imagem
     "coordenadas": {
-        # !!! Use um editor de imagem (Paint) para achar os valores (X, Y) corretos !!!
-        "nome": (65, 480),
-        "rg": (65, 530),
-        "cpf": (65, 580),
-        "foto": (250, 150)
+        "nome": (268, 432),
+        "rg": (268, 467),
+        "cpf": (268, 499),
+        "foto": (213, 222)
     },
-    "tamanho_foto": (200, 250)
+
+    # Tamanho do quadrado cinza da foto na imagem
+    "tamanho_foto": (174, 174)
 }
 
 # --- FUNÇÕES (MODIFICADAS PARA USAR AS CONFIGURAÇÕES) ---
